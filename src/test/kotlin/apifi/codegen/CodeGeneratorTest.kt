@@ -14,16 +14,14 @@ class CodeGeneratorTest : DescribeSpec({
             val openApi = OpenAPIV3Parser().readContents(file).openAPI
             val spec = SpecFileParser.parse(openApi)
             val fileSpecs = CodeGenerator.generate(spec, "com.pets")
-            fileSpecs.size shouldBe 4
+            fileSpecs.size shouldBe 3
 
             val expectedPetApi = FileUtils.getFile("src", "test-res", "codegen", "expected-pet-api").readText()
             val expectedStoreApi = FileUtils.getFile("src", "test-res", "codegen", "expected-store-api").readText()
             val expectedModels = FileUtils.getFile("src", "test-res", "codegen", "expected-models").readText()
-            val expectedResponseModel = FileUtils.getFile("src", "test-res", "codegen", "expected-response-model").readText()
             fileSpecs[0].toString() shouldBe expectedPetApi
             fileSpecs[1].toString() shouldBe expectedStoreApi
             fileSpecs[2].toString() shouldBe expectedModels
-            fileSpecs[3].toString() shouldBe expectedResponseModel
         }
     }
 }
