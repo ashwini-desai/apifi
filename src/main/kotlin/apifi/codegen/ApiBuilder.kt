@@ -51,15 +51,11 @@ object ApiBuilder {
 
                 val serviceCallStatement = serviceCallStatement(operation, queryParams, pathParams, requestBodyParams)
 
-                val httpRequestParam = ParameterSpec.builder("httpRequest",
-                        ClassName("io.micronaut.http", "HttpRequest").parameterizedBy(Any::class.asClassName()))
-                        .build()
                 val responseType = operation.response?.firstOrNull()?.let { ClassName("io.micronaut.http", "HttpResponse").parameterizedBy(it.toKotlinPoetType(modelMapping)) }
                 FunSpec.builder(operation.name)
                         .addAnnotation(operationTypeAnnotation(operation, path))
                         .also { b -> operation.request?.consumes?.let { consumes -> b.addAnnotation(operationContentTypeAnnotation(consumes)) } }
                         .addParameters(queryParams + pathParams + headerParams + requestBodyParams)
-                        .addParameter(httpRequestParam)
                         .also { responseType?.let { res -> it.returns(res) } }
                         .addStatement("return $serviceCallStatement")
                         .build()

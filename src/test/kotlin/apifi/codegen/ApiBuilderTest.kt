@@ -33,11 +33,11 @@ class ApiBuilderTest : DescribeSpec({
             val apiClass = api.members[0] as TypeSpec
             apiClass.funSpecs.size shouldBe 3
             apiClass.funSpecs[0].toString() shouldBe "@io.micronaut.http.annotation.Get(value = \"/pets\")\n" +
-                    "fun getOpName(httpRequest: io.micronaut.http.HttpRequest<kotlin.Any>) = HttpResponse.ok(controller.getOpName())\n"
+                    "fun getOpName() = HttpResponse.ok(controller.getOpName())\n"
             apiClass.funSpecs[1].toString() shouldBe "@io.micronaut.http.annotation.Post(value = \"/pets\")\n" +
-                    "fun postOpName(httpRequest: io.micronaut.http.HttpRequest<kotlin.Any>) = HttpResponse.ok(controller.postOpName())\n"
+                    "fun postOpName() = HttpResponse.ok(controller.postOpName())\n"
             apiClass.funSpecs[2].toString() shouldBe "@io.micronaut.http.annotation.Get(value = \"/pets/{petId}\")\n" +
-                    "fun getPet(httpRequest: io.micronaut.http.HttpRequest<kotlin.Any>) = HttpResponse.ok(controller.getPet())\n"
+                    "fun getPet() = HttpResponse.ok(controller.getPet())\n"
         }
 
         it("generate api method with query, path and header params") {
@@ -52,8 +52,7 @@ class ApiBuilderTest : DescribeSpec({
             apiClass.funSpecs[0].parameters.map { it.toString() } shouldContainExactlyInAnyOrder
                     listOf("@io.micronaut.http.annotation.QueryValue limit: kotlin.Int",
                             "@io.micronaut.http.annotation.PathVariable petId: kotlin.Int",
-                            "@io.micronaut.http.annotation.Header(value = \"x-header\") xHeader: kotlin.String",
-                            "httpRequest: io.micronaut.http.HttpRequest<kotlin.Any>")
+                            "@io.micronaut.http.annotation.Header(value = \"x-header\") xHeader: kotlin.String")
         }
 
         it("generate api method with request and response") {
@@ -64,9 +63,7 @@ class ApiBuilderTest : DescribeSpec({
             val apiClass = api.members[0] as TypeSpec
             apiClass.funSpecs[0].annotations[0].toString() shouldBe "@io.micronaut.http.annotation.Post(value = \"/pets\")"
             apiClass.funSpecs[0].annotations[1].toString() shouldBe "@io.micronaut.http.annotation.Consumes(\"application/json\", \"text/plain\")"
-            apiClass.funSpecs[0].parameters.map { it.toString() } shouldContainExactlyInAnyOrder
-                    listOf("@io.micronaut.http.annotation.Body body: models.Pet",
-                            "httpRequest: io.micronaut.http.HttpRequest<kotlin.Any>")
+            apiClass.funSpecs[0].parameters.map { it.toString() } shouldContainExactlyInAnyOrder listOf("@io.micronaut.http.annotation.Body body: models.Pet")
             apiClass.funSpecs[0].returnType.toString() shouldBe "io.micronaut.http.HttpResponse<models.PetResponse>"
         }
 

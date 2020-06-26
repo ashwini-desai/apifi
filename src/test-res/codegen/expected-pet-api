@@ -2,7 +2,6 @@ package com.pets
 
 import com.pets.models.Error
 import com.pets.models.Pet
-import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Consumes
@@ -11,7 +10,6 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Post
 import javax.inject.Inject
-import kotlin.Any
 import kotlin.Array
 import kotlin.String
 
@@ -21,11 +19,11 @@ class PetsApi @Inject constructor(
 ) {
   @Post(value = "/pets")
   @Consumes("application/json")
-  fun createPets(@Body body: Array<Pet>, httpRequest: HttpRequest<Any>): HttpResponse<Error> =
+  fun createPets(@Body body: Array<Pet>): HttpResponse<Error> =
       HttpResponse.ok(controller.createPets(body))
 
   @Get(value = "/pets/{petId}")
-  fun showPetById(@PathVariable petId: String, httpRequest: HttpRequest<Any>): HttpResponse<Pet> =
+  fun showPetById(@PathVariable petId: String): HttpResponse<Pet> =
       HttpResponse.ok(controller.showPetById(petId))
 }
 
