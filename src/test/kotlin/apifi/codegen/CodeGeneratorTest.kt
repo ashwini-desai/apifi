@@ -1,6 +1,7 @@
 package apifi.codegen
 
 import apifi.parser.SpecFileParser
+import io.kotlintest.matchers.collections.shouldNotContainInOrder
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.DescribeSpec
 import io.swagger.v3.parser.OpenAPIV3Parser
@@ -14,7 +15,7 @@ class CodeGeneratorTest : DescribeSpec({
             val openApi = OpenAPIV3Parser().readContents(file).openAPI
             val spec = SpecFileParser.parse(openApi)
             val fileSpecs = CodeGenerator.generate(spec, "com.pets")
-            fileSpecs.size shouldBe 3
+            fileSpecs.size shouldBe 8
 
             val expectedPetApi = FileUtils.getFile("src", "test-res", "codegen", "expected-pet-api").readText()
             val expectedStoreApi = FileUtils.getFile("src", "test-res", "codegen", "expected-store-api").readText()
@@ -22,6 +23,7 @@ class CodeGeneratorTest : DescribeSpec({
             fileSpecs[0].toString() shouldBe expectedPetApi
             fileSpecs[1].toString() shouldBe expectedStoreApi
             fileSpecs[2].toString() shouldBe expectedModels
+            fileSpecs.map { it.toString() } shouldNotContainInOrder  listOf("class BadRequestException", "class UnauthorizedException", "class ForbiddenException", "class NotFoundException", "class InternalServerException")
         }
     }
 }

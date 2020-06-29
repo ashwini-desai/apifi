@@ -14,11 +14,12 @@ object Non200ResponseHandler {
 
     fun getExceptionClassFor(status: Int) = allExceptionDetailsHolder.find { it.status == status }?.exceptionClassName ?: "InternalServerErrorException"
 
-    fun generateExceptionClassesAndHandlers(basePackageName: String) {
+
+    fun generateExceptionClassesAndHandlers(basePackageName: String) =
         allExceptionDetailsHolder.map { exception ->
             ExceptionFileBuilder.build(exception, basePackageName)
         }
-    }
+
 
 }
 

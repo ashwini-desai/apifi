@@ -1,6 +1,5 @@
 package apifi.codegen
 
-import apifi.parser.models.SecurityDefinitionType
 import apifi.parser.models.Spec
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -14,9 +13,9 @@ object CodeGenerator {
 
         val apiClassFiles = apiGroups.map { ApiBuilder.build(it.key!!, it.value, basePackageName, modelMapping) }
 
-        return (apiClassFiles + modelFiles)
+        val exceptionClassesAndHandlerFiles = Non200ResponseHandler.generateExceptionClassesAndHandlers(basePackageName)
+
+        return (apiClassFiles + modelFiles + exceptionClassesAndHandlerFiles)
     }
 
 }
-
-data class SecurityDependency(val name: String, val packageName: String, val securityDefinitionType: SecurityDefinitionType)
