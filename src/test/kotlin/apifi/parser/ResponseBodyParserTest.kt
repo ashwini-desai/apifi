@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils
 class ResponseBodyParserTest : DescribeSpec({
 
     describe("Response Body Parser") {
-        it("!should parse response body") {
+        it("should parse response body") {
             val file = FileUtils.getFile("src", "test-res", "parser", "models", "with-separate-schema.yml").readText().trimIndent()
             val openApi = OpenAPIV3Parser().readContents(file).openAPI
             val response = ResponseBodyParser.parse(openApi.paths["/pets/{petId}"]?.get?.responses, "showByPetId")
@@ -19,7 +19,7 @@ class ResponseBodyParserTest : DescribeSpec({
             response?.second shouldBe emptyList()
         }
 
-        it("!should parse response body with inline schema") {
+        it("should parse response body with inline schema") {
             val file = FileUtils.getFile("src", "test-res", "parser", "models", "with-inline-request-response-schema.yml").readText().trimIndent()
             val openApi = OpenAPIV3Parser().readContents(file).openAPI
             val response = ResponseBodyParser.parse(openApi.paths["/pets"]?.post?.responses, "showByPetId")
