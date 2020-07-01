@@ -56,7 +56,7 @@ class ApiBuilderTest : DescribeSpec({
         }
 
         it("generate api method with request and response") {
-            val operation = Operation(PathItem.HttpMethod.POST, "createPet", emptyList(), emptyList(), Request("Pet", listOf("application/json", "text/plain")), listOf("PetResponse"))
+            val operation = Operation(PathItem.HttpMethod.POST, "createPet", emptyList(), emptyList(), Request("Pet", listOf("application/json", "text/plain")), listOf(Response("200", "PetResponse")))
 
             val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
 
@@ -71,7 +71,7 @@ class ApiBuilderTest : DescribeSpec({
             val queryParam = Param("limit", "kotlin.Int", true, ParamType.Query)
             val pathParam = Param("petId", "kotlin.Int", true, ParamType.Path)
             val headerParam = Param("x-header", "kotlin.String", true, ParamType.Header)
-            val operation = Operation(PathItem.HttpMethod.POST, "listPets", emptyList(), listOf(queryParam, pathParam, headerParam), Request("Pet", listOf("application/json")), listOf("PetResponse"))
+            val operation = Operation(PathItem.HttpMethod.POST, "listPets", emptyList(), listOf(queryParam, pathParam, headerParam), Request("Pet", listOf("application/json")), listOf(Response("200", "PetResponse")))
 
             val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
 
@@ -83,7 +83,7 @@ class ApiBuilderTest : DescribeSpec({
             val queryParam = Param("limit", "kotlin.Int", true, ParamType.Query)
             val pathParam = Param("petId", "kotlin.Int", true, ParamType.Path)
             val headerParam = Param("x-header", "kotlin.String", true, ParamType.Header)
-            val operation = Operation(PathItem.HttpMethod.POST, "createPet", emptyList(), listOf(queryParam, pathParam, headerParam), Request("Pet", null), listOf("PetResponse"))
+            val operation = Operation(PathItem.HttpMethod.POST, "createPet", emptyList(), listOf(queryParam, pathParam, headerParam), Request("Pet", null), listOf(Response("200", "PetResponse")))
 
             val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
 
@@ -92,7 +92,7 @@ class ApiBuilderTest : DescribeSpec({
         }
 
         it("inject controller") {
-            val operation = Operation(PathItem.HttpMethod.POST, "listPets", listOf(), emptyList(), Request("Pet", null), listOf("PetResponse"))
+            val operation = Operation(PathItem.HttpMethod.POST, "listPets", listOf(), emptyList(), Request("Pet", null), listOf(Response("200", "PetResponse")))
 
             val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
 

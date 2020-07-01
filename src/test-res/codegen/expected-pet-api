@@ -1,6 +1,5 @@
 package com.pets
 
-import com.pets.models.Error
 import com.pets.models.Pet
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
@@ -19,7 +18,7 @@ class PetsApi @Inject constructor(
 ) {
   @Post(value = "/pets")
   @Consumes("application/json")
-  fun createPets(@Body body: Array<Pet>): HttpResponse<Error> =
+  fun createPets(@Body body: Array<Pet>): HttpResponse<String> =
       HttpResponse.ok(controller.createPets(body))
 
   @Get(value = "/pets/{petId}")
@@ -28,7 +27,7 @@ class PetsApi @Inject constructor(
 }
 
 interface PetsController {
-  fun createPets(body: Array<Pet>): Error
+  fun createPets(body: Array<Pet>): String
 
   fun showPetById(petId: String): Pet
 }

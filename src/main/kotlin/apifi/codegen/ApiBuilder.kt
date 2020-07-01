@@ -51,7 +51,8 @@ object ApiBuilder {
 
                 val serviceCallStatement = serviceCallStatement(operation, queryParams, pathParams, requestBodyParams)
 
-                val responseType = operation.response?.firstOrNull()?.let { ClassName("io.micronaut.http", "HttpResponse").parameterizedBy(it.toKotlinPoetType(modelMapping)) }
+                val responseType = operation.response?.firstOrNull { it.defaultOrStatus == "200" || it.defaultOrStatus == "201" }?.let { ClassName("io.micronaut.http", "HttpResponse").parameterizedBy(it.type.toKotlinPoetType(modelMapping)) }
+
                 FunSpec.builder(operation.name)
                         .addAnnotation(operationTypeAnnotation(operation, path))
                         .also { b -> operation.request?.consumes?.let { consumes -> b.addAnnotation(operationContentTypeAnnotation(consumes)) } }
@@ -81,5 +82,6 @@ object ApiBuilder {
         }?.let { listOf(it) } ?: emptyList()
         return "HttpResponse.ok(controller.${operation.name}(${(queryParamNames + pathParamNames + requestParamNames).joinToString()}))"
     }
+
 
 }
