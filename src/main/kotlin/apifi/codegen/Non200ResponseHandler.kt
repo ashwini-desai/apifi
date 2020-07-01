@@ -14,6 +14,8 @@ object Non200ResponseHandler {
 
     fun getExceptionClassFor(status: Int) = allExceptionDetailsHolder.find { it.status == status }?.exceptionClassName ?: "InternalServerErrorException"
 
+    fun getExceptionClassFor(statuses: List<Int>) = statuses.map { status -> allExceptionDetailsHolder.find { it.status == status }?.exceptionClassName ?: "InternalServerErrorException" }
+
 
     fun generateExceptionClassesAndHandlers(basePackageName: String) =
         allExceptionDetailsHolder.map { exception ->

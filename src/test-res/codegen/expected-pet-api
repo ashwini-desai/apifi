@@ -1,5 +1,6 @@
 package com.pets
 
+import com.pets.exceptions.BadRequestException
 import com.pets.models.Pet
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
@@ -11,6 +12,7 @@ import io.micronaut.http.annotation.Post
 import javax.inject.Inject
 import kotlin.Array
 import kotlin.String
+import kotlin.jvm.Throws
 
 @Controller
 class PetsApi @Inject constructor(
@@ -21,6 +23,7 @@ class PetsApi @Inject constructor(
   fun createPets(@Body body: Array<Pet>): HttpResponse<String> =
       HttpResponse.ok(controller.createPets(body))
 
+  @Throws(BadRequestException::class)
   @Get(value = "/pets/{petId}")
   fun showPetById(@PathVariable petId: String): HttpResponse<Pet> =
       HttpResponse.ok(controller.showPetById(petId))

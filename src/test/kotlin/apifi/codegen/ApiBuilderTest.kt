@@ -119,6 +119,29 @@ class ApiBuilderTest : DescribeSpec({
             val apiClass = api.members[0] as TypeSpec
             apiClass.funSpecs[0].body.toString().trimIndent() shouldBe "return HttpResponse.ok(controller.uploadDocument(java.io.File.createTempFile(body.filename, \"\").also { it.writeBytes(body.bytes) }))"
         }
+
+        it("should add @throws annotation for all non 200 responses returned from an operation") {
+            val request = Request("Pet", listOf("application/json", "text/plain"))
+            val responses = listOf(Response("200", "PetResponse"), Response("400", "kotlin.String"), Response("403", "kotlin.String"))
+            val operation = Operation(PathItem.HttpMethod.POST, "createPet", emptyList(), emptyList(), request, responses)
+
+            val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
+
+            val apiClass = api.members[0] as TypeSpec
+            apiClass.funSpecs[0].annotations[0].toString() shouldBe "@kotlin.jvm.Throws(apifi.gen.exceptions.BadRequestException::class)"
+            apiClass.funSpecs[0].annotations[1].toString() shouldBe "@kotlin.jvm.Throws(apifi.gen.exceptions.ForbiddenException::class)"
+        }
+
+        it("should add @throws for InternalServerException if no specific exception for an http status is found") {
+            val request = Request("Pet", listOf("application/json", "text/plain"))
+            val responses = listOf(Response("200", "PetResponse"), Response("301", "kotlin.String"))
+            val operation = Operation(PathItem.HttpMethod.POST, "createPet", emptyList(), emptyList(), request, responses)
+
+            val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
+
+            val apiClass = api.members[0] as TypeSpec
+            apiClass.funSpecs[0].annotations[0].toString() shouldBe "@kotlin.jvm.Throws(apifi.gen.exceptions.InternalServerErrorException::class)"
+        }
     }
 
 

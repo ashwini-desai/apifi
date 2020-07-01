@@ -30,14 +30,14 @@ object ApiBuilder {
                 .addAnnotation(AnnotationSpec.builder(ClassName(micronautHttpAnnotation, "Controller"))
                         .build())
                 .addProperty(controllerProperty)
-                .addFunctions(generateOperationFunctions(paths, modelMapping))
+                .addFunctions(generateOperationFunctions(paths, basePackageName, modelMapping))
 
         classSpec.primaryConstructor(primaryConstructor.build())
 
         return FileSpec.builder(basePackageName, "$controllerClassName.kt").addType(classSpec.build()).addType(controllerInterfaceClass).build()
     }
 
-    private fun generateOperationFunctions(paths: List<Path>, modelMapping: List<Pair<String, String>>): List<FunSpec> {
+    private fun generateOperationFunctions(paths: List<Path>, basePackageName: String, modelMapping: List<Pair<String, String>>): List<FunSpec> {
         return paths.flatMap { path ->
             path.operations?.map { operation ->
                 val queryParams = operation.params?.filter { it.type == ParamType.Query }?.map(QueryParamBuilder::build)
@@ -53,7 +53,17 @@ object ApiBuilder {
 
                 val responseType = operation.response?.firstOrNull { it.defaultOrStatus == "200" || it.defaultOrStatus == "201" }?.let { ClassName("io.micronaut.http", "HttpResponse").parameterizedBy(it.type.toKotlinPoetType(modelMapping)) }
 
+                val non2xxStatusResponseFromOperation = operation.response?.filter { it.defaultOrStatus != "default" && it.defaultOrStatus != "200" && it.defaultOrStatus != "201" }?.map { it.defaultOrStatus.toInt() }
+
+                val exceptionClassesForNon2xxResponses = non2xxStatusResponseFromOperation?.let { Non200ResponseHandler.getExceptionClassFor(it) }
+
+                val exceptionAnnotations = exceptionClassesForNon2xxResponses?.map { exceptionClass ->
+                    AnnotationSpec.builder(Throws::class)
+                            .addMember("%T::class", ClassName("$basePackageName.exceptions", exceptionClass))
+                            .build()}
+
                 FunSpec.builder(operation.name)
+                        .also { b -> exceptionAnnotations?.let { b.addAnnotations(it) } }
                         .addAnnotation(operationTypeAnnotation(operation, path))
                         .also { b -> operation.request?.consumes?.let { consumes -> b.addAnnotation(operationContentTypeAnnotation(consumes)) } }
                         .addParameters(queryParams + pathParams + headerParams + requestBodyParams)
