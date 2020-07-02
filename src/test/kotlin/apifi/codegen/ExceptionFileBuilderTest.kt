@@ -1,5 +1,7 @@
 package apifi.codegen
 
+import com.squareup.kotlinpoet.TypeSpec
+import io.kotlintest.matchers.collections.shouldNotContainInOrder
 import io.kotlintest.matchers.string.shouldContain
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.DescribeSpec
@@ -19,7 +21,7 @@ class ExceptionFileBuilderTest : DescribeSpec( {
 
         it("should generate global exception handler for the exception class with exception's default message and status") {
             exceptionFileSpec.members[1].toString() shouldContain
-                    "class GlobalSomeExceptionHandler : io.micronaut.http.server.exceptions.ExceptionHandler<com.abc.exceptions.SomeException?, io.micronaut.http.HttpResponse<String>> {\n" +
+                    "class GlobalSomeExceptionHandler : io.micronaut.http.server.exceptions.ExceptionHandler<com.abc.exceptions.SomeException, io.micronaut.http.HttpResponse<String>> {\n" +
                     "  fun handle(request: io.micronaut.http.HttpRequest<Any>?, exception: com.abc.exceptions.SomeException?): io.micronaut.http.HttpResponse<String> {\n" +
                     "    val msg = exception?.conversionError?.cause?.localizedMessage ?: \"Some error occurred\"\n" +
                     "    HttpResponse.status<String>(HttpStatus.valueOf(123), msg)\n" +
@@ -27,8 +29,13 @@ class ExceptionFileBuilderTest : DescribeSpec( {
                     "}"
         }
 
-        it("exception handler class should have @Singleton annotation") {
-            exceptionFileSpec.members[1].toString() shouldContain "javax.inject.Singleton"
+        it("exception handler class should have all required annotations") {
+            val exceptionHandlerClass = exceptionFileSpec.members[1] as TypeSpec
+            val annotations = exceptionHandlerClass.annotationSpecs.map { it.toString() }
+
+            annotations shouldNotContainInOrder listOf( "@javax.inject.Singleton",
+                                                        "@io.micronaut.http.annotation.Produces",
+                    "@io.micronaut.context.annotation.Requires(classes = [com.abc.SomeException::class, io.micronaut.http.server.exceptions.ExceptionHandler::class])")
         }
     }
 

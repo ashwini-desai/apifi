@@ -23,9 +23,14 @@ object ExceptionFileBuilder {
         builder.addType(
                 TypeSpec.classBuilder(ClassName(packageName, "Global${exceptionClassName}Handler"))
                         .addAnnotation(ClassName("javax.inject", "Singleton"))
+                        .addAnnotation(ClassName("io.micronaut.http.annotation", "Produces"))
+                        .addAnnotation(
+                                AnnotationSpec.builder(ClassName("io.micronaut.context.annotation", "Requires"))
+                                .addMember("classes = [%T::class, %T::class]", ClassName(packageName, exceptionClassName), ClassName("io.micronaut.http.server.exceptions", "ExceptionHandler"))
+                                .build())
                         .addSuperinterface(
                                 ClassName("io.micronaut.http.server.exceptions", "ExceptionHandler")
-                                        .parameterizedBy(ClassName(packageName, exceptionClassName).copy(nullable = true),
+                                        .parameterizedBy(ClassName(packageName, exceptionClassName),
                                                          ClassName("io.micronaut.http", "HttpResponse").parameterizedBy("String".toKotlinPoetType()))
                         )
                         .addFunction(FunSpec.builder("handle")
@@ -42,16 +47,3 @@ object ExceptionFileBuilder {
     }
 
 }
-
-
-/*
- class BadRequestException(string: String) : Exception(string)
-
-@Singleton
-class GlobalBadRequestExceptionHandler : ExceptionHandler<BadRequestException?, HttpResponse<String>> {
-    override fun handle(request: HttpRequest<*>?, exception: BadRequestException?): HttpResponse<String> {
-        val msg = exception?.conversionError?.cause?.localizedMessage ?: "Bad request"
-        return HttpResponse.badRequest(msg)
-    }
-}
-*/
