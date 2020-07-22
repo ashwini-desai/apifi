@@ -3,6 +3,8 @@ package apifi.helpers
 
 class HttpStatusToExceptionClassMapper {
 
+    val basePackageName = "apifi.micronaut.exceptions"
+
     private val allExceptionDetailsHolder = listOf(
             ExceptionDetailsHolder(400, "BadRequestException"),
             ExceptionDetailsHolder(401, "UnauthorizedException"),

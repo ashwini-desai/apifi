@@ -63,10 +63,11 @@ object ApiBuilder {
 
     private fun operationExceptionAnnotations(responses: List<Response>): List<AnnotationSpec> {
         val non2xxStatusResponseFromOperation = responses.filter { it.defaultOrStatus != "default" && it.defaultOrStatus != "200" && it.defaultOrStatus != "201" }.map { it.defaultOrStatus.toInt() }
-        val exceptionClassesForNon2xxResponses = non2xxStatusResponseFromOperation.let { HttpStatusToExceptionClassMapper().getExceptionClassFor(it) }
+        val httpStatusToExceptionClassMapper = HttpStatusToExceptionClassMapper()
+        val exceptionClassesForNon2xxResponses = non2xxStatusResponseFromOperation.let { httpStatusToExceptionClassMapper.getExceptionClassFor(it) }
         return exceptionClassesForNon2xxResponses.map { exceptionClass ->
             AnnotationSpec.builder(Throws::class)
-                    .addMember("%T::class", ClassName("apifi.micronaut.exceptions", exceptionClass))
+                    .addMember("%T::class", ClassName(httpStatusToExceptionClassMapper.basePackageName, exceptionClass))
                     .build()
         }
     }
