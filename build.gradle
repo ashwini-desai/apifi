@@ -43,9 +43,6 @@ subprojects {
 }
 
 project(":codegen") {
-    configurations {
-        testCompile.extendsFrom compileOnly
-    }
 
     dependencies {
         implementation 'io.swagger.parser.v3:swagger-parser-v3:2.0.16'
