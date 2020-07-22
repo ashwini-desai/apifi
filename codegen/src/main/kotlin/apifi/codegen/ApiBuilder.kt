@@ -1,7 +1,7 @@
 package apifi.codegen
 
+import apifi.helpers.HttpStatusToExceptionClassMapper
 import apifi.helpers.toTitleCase
-import apifi.micronaut.exceptions.HttpStatusToExceptionClassMapper
 import apifi.parser.models.Operation
 import apifi.parser.models.Path
 import apifi.parser.models.Response
@@ -66,7 +66,7 @@ object ApiBuilder {
         val exceptionClassesForNon2xxResponses = non2xxStatusResponseFromOperation.let { HttpStatusToExceptionClassMapper().getExceptionClassFor(it) }
         return exceptionClassesForNon2xxResponses.map { exceptionClass ->
             AnnotationSpec.builder(Throws::class)
-                    .addMember("%T::class", exceptionClass.asClassName())
+                    .addMember("%T::class", ClassName("apifi.micronaut.exceptions", exceptionClass))
                     .build()
         }
     }
