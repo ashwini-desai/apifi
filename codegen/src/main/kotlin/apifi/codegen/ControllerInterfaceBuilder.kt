@@ -9,8 +9,8 @@ object ControllerInterfaceBuilder {
     fun build(paths: List<Path>, baseName: String): TypeSpec {
         val controllerMethods = paths.flatMap { path ->
             path.operations?.map { operation ->
-                val queryParams = operation.params?.filter { it.type == ParamType.Query } ?: emptyList()
-                val pathParams = operation.params?.filter { it.type == ParamType.Path } ?: emptyList()
+                val queryParams = operation.queryParams()
+                val pathParams = operation.pathParams()
                 val params = (queryParams + pathParams).map {
                     ParameterSpec.builder(it.name, it.dataType.toKotlinPoetType().copy(nullable = !it.isRequired)).build()
                 }

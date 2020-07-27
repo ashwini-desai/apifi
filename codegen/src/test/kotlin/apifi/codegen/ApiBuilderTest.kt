@@ -15,7 +15,7 @@ class ApiBuilderTest : DescribeSpec({
     describe("Api Builder") {
         it("generate api class with controller annotation") {
             val path = Path("/pets", listOf(Operation(PathItem.HttpMethod.GET, "listPets", emptyList(), null, null, null)))
-            val api = ApiBuilder.build("pets", listOf(path), "apifi.gen", modelMapping())
+            val api = ApiBuilder().build("pets", listOf(path), "apifi.gen", modelMapping())
             val apiClass = api.members[0] as TypeSpec
             apiClass.name shouldBe "PetsApi"
             apiClass.annotationSpecs[0].toString() shouldBe "@io.micronaut.http.annotation.Controller"
@@ -29,7 +29,7 @@ class ApiBuilderTest : DescribeSpec({
             val path2 = Path("/pets/{petId}", listOf(
                     Operation(PathItem.HttpMethod.GET, "getPet", emptyList(), null, null, null, SecurityDefinitionType.BASIC_AUTH)
             ))
-            val api = ApiBuilder.build("pets", listOf(path1, path2), "apifi.gen", modelMapping())
+            val api = ApiBuilder().build("pets", listOf(path1, path2), "apifi.gen", modelMapping())
             val apiClass = api.members[0] as TypeSpec
             apiClass.funSpecs.size shouldBe 3
             apiClass.funSpecs[0].toString() shouldBe "@io.micronaut.http.annotation.Get(value = \"/pets\")\n" +
@@ -46,7 +46,7 @@ class ApiBuilderTest : DescribeSpec({
             val headerParam = Param("x-header", "kotlin.String", true, ParamType.Header)
             val operation = Operation(PathItem.HttpMethod.POST, "createPet", emptyList(), listOf(queryParam, pathParam, headerParam), null, null)
 
-            val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
+            val api = ApiBuilder().build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
 
             val apiClass = api.members[0] as TypeSpec
             apiClass.funSpecs[0].parameters.map { it.toString() } shouldContainExactlyInAnyOrder
@@ -58,7 +58,7 @@ class ApiBuilderTest : DescribeSpec({
         it("generate api method with request and response") {
             val operation = Operation(PathItem.HttpMethod.POST, "createPet", emptyList(), emptyList(), Request("Pet", listOf("application/json", "text/plain")), listOf(Response("200", "PetResponse")))
 
-            val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
+            val api = ApiBuilder().build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
 
             val apiClass = api.members[0] as TypeSpec
             apiClass.funSpecs[0].annotations[0].toString() shouldBe "@io.micronaut.http.annotation.Post(value = \"/pets\")"
@@ -73,7 +73,7 @@ class ApiBuilderTest : DescribeSpec({
             val headerParam = Param("x-header", "kotlin.String", true, ParamType.Header)
             val operation = Operation(PathItem.HttpMethod.POST, "listPets", emptyList(), listOf(queryParam, pathParam, headerParam), Request("Pet", listOf("application/json")), listOf(Response("200", "PetResponse")))
 
-            val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
+            val api = ApiBuilder().build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
 
             val apiClass = api.members[0] as TypeSpec
             apiClass.funSpecs[0].body.toString().trimIndent() shouldBe "return HttpResponse.ok(controller.listPets(limit, petId, body))"
@@ -85,7 +85,7 @@ class ApiBuilderTest : DescribeSpec({
             val headerParam = Param("x-header", "kotlin.String", true, ParamType.Header)
             val operation = Operation(PathItem.HttpMethod.POST, "createPet", emptyList(), listOf(queryParam, pathParam, headerParam), Request("Pet", null), listOf(Response("200", "PetResponse")))
 
-            val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
+            val api = ApiBuilder().build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
 
             val apiClass = api.members[0] as TypeSpec
             apiClass.funSpecs[0].body.toString().trimIndent() shouldBe "return HttpResponse.ok(controller.createPet(limit, petId, body))"
@@ -94,7 +94,7 @@ class ApiBuilderTest : DescribeSpec({
         it("inject controller") {
             val operation = Operation(PathItem.HttpMethod.POST, "listPets", listOf(), emptyList(), Request("Pet", null), listOf(Response("200", "PetResponse")))
 
-            val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
+            val api = ApiBuilder().build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
 
             val apiClass = api.members[0] as TypeSpec
             val controllerClass = api.members[1] as TypeSpec
@@ -116,7 +116,7 @@ class ApiBuilderTest : DescribeSpec({
             val responses = listOf(Response("200", "PetResponse"), Response("400", "kotlin.String"), Response("403", "kotlin.String"))
             val operation = Operation(PathItem.HttpMethod.POST, "createPet", emptyList(), emptyList(), request, responses)
 
-            val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
+            val api = ApiBuilder().build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
 
             val apiClass = api.members[0] as TypeSpec
             apiClass.funSpecs[0].annotations[0].toString() shouldBe "@kotlin.jvm.Throws(apifi.micronaut.exceptions.BadRequestException::class)"
@@ -128,7 +128,7 @@ class ApiBuilderTest : DescribeSpec({
             val responses = listOf(Response("200", "PetResponse"), Response("301", "kotlin.String"))
             val operation = Operation(PathItem.HttpMethod.POST, "createPet", emptyList(), emptyList(), request, responses)
 
-            val api = ApiBuilder.build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
+            val api = ApiBuilder().build("pets", listOf(Path("/pets", listOf(operation))), "apifi.gen", modelMapping())
 
             val apiClass = api.members[0] as TypeSpec
             apiClass.funSpecs[0].annotations[0].toString() shouldBe "@kotlin.jvm.Throws(apifi.micronaut.exceptions.InternalServerErrorException::class)"
