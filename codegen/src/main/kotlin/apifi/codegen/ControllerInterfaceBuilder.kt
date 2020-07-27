@@ -1,7 +1,6 @@
 package apifi.codegen
 
 import apifi.helpers.toKotlinPoetType
-import apifi.parser.models.ParamType
 import apifi.parser.models.Path
 import com.squareup.kotlinpoet.*
 
@@ -17,7 +16,7 @@ object ControllerInterfaceBuilder {
 
                 val requestBodyParam = operation.request?.let {
                     ParameterSpec.builder("body",
-                            (if(it.type == "io.micronaut.http.multipart.CompleteFileUpload") "java.io.File" else it.type).toKotlinPoetType())
+                            (if(it.type == micronautMultipartFileUploadPackage) "java.io.File" else it.type).toKotlinPoetType())
                             .build()
                 }
 

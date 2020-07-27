@@ -12,7 +12,7 @@ class ExceptionAnnotationBuilder(private val httpStatusToExceptionClassMapper: H
         val exceptionClassesForNon2xxResponses = non2xxStatusResponseFromOperation.let { httpStatusToExceptionClassMapper.getExceptionClassFor(it) }
         return exceptionClassesForNon2xxResponses.map { exceptionClass ->
             AnnotationSpec.builder(Throws::class)
-                    .addMember("%T::class", ClassName(httpStatusToExceptionClassMapper.basePackageName, exceptionClass))
+                    .addMember("%T::class", ClassName(apifiExceptionsPackage, exceptionClass))
                     .build()
         }
     }

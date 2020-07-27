@@ -30,16 +30,16 @@ fun Operation.headerParamSpecs() = params?.filter { it.type == ParamType.Header 
 
 fun Operation.requestParams(modelMapping: Map<String, String>) = request?.let {
     listOf(ParameterSpec.builder("body", it.type.toKotlinPoetType(modelMapping))
-            .addAnnotation(ClassName("io.micronaut.http.annotation", "Body"))
+            .addAnnotation(ClassName(micronautHttpAnnotationPackage, "Body"))
             .build())
 } ?: emptyList()
 
 fun Operation.requestParamNames(modelMapping: Map<String, String>) = request?.let {
     listOf(ParameterSpec.builder("body", it.type.toKotlinPoetType(modelMapping))
-            .addAnnotation(ClassName("io.micronaut.http.annotation", "Body"))
+            .addAnnotation(ClassName(micronautHttpAnnotationPackage, "Body"))
             .build())
 }?.map { it.name } ?: emptyList()
 
 fun Operation.returnType(modelMapping: Map<String, String>) = responses
         ?.firstOrNull { it.defaultOrStatus == "200" || it.defaultOrStatus == "201" }
-        ?.let { ClassName("io.micronaut.http", "HttpResponse").parameterizedBy(it.type.toKotlinPoetType(modelMapping)) }
+        ?.let { ClassName(micronautHttpPackage, "HttpResponse").parameterizedBy(it.type.toKotlinPoetType(modelMapping)) }
