@@ -27,5 +27,4 @@ class ApiBuilder(private val apiMethodBuilder: ApiMethodBuilder = ApiMethodBuild
 
         return FileSpec.builder(basePackageName, "$controllerClassName.kt").addType(classSpec.build()).addType(controllerInterfaceClass).build()
     }
-
 }
