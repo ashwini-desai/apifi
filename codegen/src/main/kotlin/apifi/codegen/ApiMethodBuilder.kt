@@ -7,7 +7,7 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 
 
-class ApiMethodBuilder() {
+class ApiMethodBuilder {
 
     fun methodFor(url: String, operation: Operation, modelMapping: Map<String, String>): FunSpec {
 
