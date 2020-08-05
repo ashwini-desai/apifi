@@ -2,6 +2,7 @@ package apifi.parser.models
 
 import apifi.models.Model
 import io.swagger.v3.oas.models.PathItem
+import io.swagger.v3.oas.models.responses.ApiResponses
 import io.swagger.v3.oas.models.security.SecurityScheme
 
 data class Spec(val paths: List<Path>, val models: List<Model>, val securityRequirements: List<String>, val securityDefinitions: List<SecurityDefinition>)
@@ -16,7 +17,13 @@ data class Operation(
         val request: Request?,
         val responses: List<Response> = emptyList(),
         val securitySchemeType: SecurityDefinitionType = SecurityDefinitionType.BASIC_AUTH
-)
+) {
+    fun hasOnlyDefaultResponse(): Boolean = responses.size == 1 && responses.first().defaultOrStatus == ApiResponses.DEFAULT
+
+    fun hasMoreThanOne2xxResponse(): Boolean = responses.size > 1 && responses.map { it.defaultOrStatus }.all { it.startsWith("2") }
+
+    fun first2xxResponse(): Response? = responses.firstOrNull { it.defaultOrStatus.startsWith("2") }
+}
 
 data class Response(
         val defaultOrStatus: String,

@@ -46,8 +46,10 @@ fun Operation.requestParamNames(modelMapping: Map<String, String>) = request?.le
 }?.map { it.name } ?: emptyList()
 
 fun Operation.returnType(modelMapping: Map<String, String>): ParameterizedTypeName? =
-    responses?.let { res ->
-        if (res.size == 1 && res.first().defaultOrStatus == ApiResponses.DEFAULT) ClassName(micronautHttpPackage, "HttpResponse").parameterizedBy(res[0].type.toKotlinPoetType(modelMapping))
-        else if (res.size > 1 && res.map { it.defaultOrStatus }.all { it.startsWith("2") }) error("Invalid responses defined for operation with identifier: ${this.name}. Has more than one 2xx responses defined")
-        else res.firstOrNull { it.defaultOrStatus.startsWith("2") }?.let { ClassName(micronautHttpPackage, "HttpResponse").parameterizedBy(it.type.toKotlinPoetType(modelMapping)) }
+    responses.let { res ->
+        when {
+            hasOnlyDefaultResponse() -> ClassName(micronautHttpPackage, "HttpResponse").parameterizedBy(res[0].type.toKotlinPoetType(modelMapping))
+            hasMoreThanOne2xxResponse() -> error("Invalid responses defined for operation with identifier: ${this.name}. Has more than one 2xx responses defined")
+            else -> this.first2xxResponse()?.let { ClassName(micronautHttpPackage, "HttpResponse").parameterizedBy(it.type.toKotlinPoetType(modelMapping)) }
+        }
     }
