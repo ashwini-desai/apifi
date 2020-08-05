@@ -11,10 +11,10 @@ data class Path(val url: String, val operations: List<Operation>?)
 data class Operation(
         val type: PathItem.HttpMethod,
         val name: String,
-        val tags: List<String>?,
-        val params: List<Param>?,
+        val tags: List<String> = emptyList(),
+        val params: List<Param> = emptyList(),
         val request: Request?,
-        val responses: List<Response>?,
+        val responses: List<Response> = emptyList(),
         val securitySchemeType: SecurityDefinitionType = SecurityDefinitionType.BASIC_AUTH
 )
 
@@ -26,7 +26,7 @@ data class Response(
 
 data class Request(
         val type: String,
-        val consumes: List<String>?
+        val consumes: List<String> = emptyList()
 )
 
 data class Param(

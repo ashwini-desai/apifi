@@ -14,21 +14,21 @@ class OperationExtensionTest : DescribeSpec({
 
     describe("operation return type") {
         it("when more than one 2xx response are specified, should throw exception") {
-            val operation = Operation(PathItem.HttpMethod.GET, "getOpName", emptyList(), null, null, listOf(Response("201", "kotlin.String"), Response("200", "PetResponse")), SecurityDefinitionType.BASIC_AUTH)
-            val exception = shouldThrow<IllegalStateException> { operation.returnType(modelMapping()).toString() }
+            val operation = Operation(PathItem.HttpMethod.GET, "getOpName", emptyList(), emptyList(), null, listOf(Response("201", "kotlin.String"), Response("200", "PetResponse")), SecurityDefinitionType.BASIC_AUTH)
+            val exception = shouldThrow<IllegalStateException> { operation.returnType(testModelMapping()).toString() }
             exception.message shouldBe "Invalid responses defined for operation with identifier: getOpName. Has more than one 2xx responses defined"
         }
         it("when only default response is specified, should return type of default response") {
-            val operation = Operation(PathItem.HttpMethod.GET, "getOpName", emptyList(), null, null, listOf(Response(ApiResponses.DEFAULT, "Error")), SecurityDefinitionType.BASIC_AUTH)
-            operation.returnType(modelMapping()).toString() shouldBe "io.micronaut.http.HttpResponse<models.Error>"
+            val operation = Operation(PathItem.HttpMethod.GET, "getOpName", emptyList(), emptyList(), null, listOf(Response(ApiResponses.DEFAULT, "Error")), SecurityDefinitionType.BASIC_AUTH)
+            operation.returnType(testModelMapping()).toString() shouldBe "io.micronaut.http.HttpResponse<models.Error>"
         }
         it("when 200 and default are specified, should return type of 200") {
-            val operation = Operation(PathItem.HttpMethod.GET, "getOpName", emptyList(), null, null, listOf(Response("200", "Pet"), Response("default", "Error")), SecurityDefinitionType.BASIC_AUTH)
-            operation.returnType(modelMapping()).toString() shouldBe "io.micronaut.http.HttpResponse<models.Pet>"
+            val operation = Operation(PathItem.HttpMethod.GET, "getOpName", emptyList(), emptyList(), null, listOf(Response("200", "Pet"), Response("default", "Error")), SecurityDefinitionType.BASIC_AUTH)
+            operation.returnType(testModelMapping()).toString() shouldBe "io.micronaut.http.HttpResponse<models.Pet>"
         }
         it("when more than one responses are defined without default response") {
-            val operation = Operation(PathItem.HttpMethod.GET, "getOpName", emptyList(), null, null, listOf(Response("200", "Pet"), Response("400", "Error")), SecurityDefinitionType.BASIC_AUTH)
-            operation.returnType(modelMapping()).toString() shouldBe "io.micronaut.http.HttpResponse<models.Pet>"
+            val operation = Operation(PathItem.HttpMethod.GET, "getOpName", emptyList(), emptyList(), null, listOf(Response("200", "Pet"), Response("400", "Error")), SecurityDefinitionType.BASIC_AUTH)
+            operation.returnType(testModelMapping()).toString() shouldBe "io.micronaut.http.HttpResponse<models.Pet>"
         }
     }
 })
