@@ -8,30 +8,21 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import io.swagger.v3.oas.models.responses.ApiResponses
-import org.apache.http.HttpRequest
-import org.apache.http.message.BasicHttpRequest
-import org.apache.http.protocol.HTTP
 
 
-fun Operation.queryParamSpecs() = params?.filter { it.type == ParamType.Query }?.map(QueryParamBuilder::build)
-        ?: emptyList()
+fun Operation.queryParamSpecs() = params.filter { it.type == ParamType.Query }.map(QueryParamBuilder::build)
 
-fun Operation.queryParamSpecNames() = params?.filter { it.type == ParamType.Query }?.map(QueryParamBuilder::build)?.map { it.name }
-        ?: emptyList()
+fun Operation.queryParamSpecNames() = params.filter { it.type == ParamType.Query }.map(QueryParamBuilder::build).map { it.name }
 
-fun Operation.queryParams(): List<Param> = params?.filter { it.type == ParamType.Query } ?: emptyList()
+fun Operation.queryParams(): List<Param> = params.filter { it.type == ParamType.Query }
 
-fun Operation.pathParamSpecs() = params?.filter { it.type == ParamType.Path }?.map(PathVariableBuilder::build)
-        ?: emptyList()
+fun Operation.pathParamSpecs() = params.filter { it.type == ParamType.Path }.map(PathVariableBuilder::build)
 
-fun Operation.pathParamSpecNames() = params?.filter { it.type == ParamType.Path }?.map(PathVariableBuilder::build)?.map { it.name }
-        ?: emptyList()
+fun Operation.pathParamSpecNames() = params.filter { it.type == ParamType.Path }.map(PathVariableBuilder::build).map { it.name }
 
-fun Operation.pathParams(): List<Param> = params?.filter { it.type == ParamType.Path } ?: emptyList()
+fun Operation.pathParams(): List<Param> = params.filter { it.type == ParamType.Path }
 
-fun Operation.headerParamSpecs() = params?.filter { it.type == ParamType.Header }?.map(HeaderBuilder::build)
-        ?: emptyList()
+fun Operation.headerParamSpecs() = params.filter { it.type == ParamType.Header }.map(HeaderBuilder::build)
 
 fun Operation.requestParams(modelMapping: Map<String, String>) = request?.let {
     listOf(ParameterSpec.builder("body", it.type.toKotlinPoetType(modelMapping))
@@ -50,6 +41,7 @@ fun Operation.returnType(modelMapping: Map<String, String>): ParameterizedTypeNa
         when {
             hasOnlyDefaultResponse() -> ClassName(micronautHttpPackage, "HttpResponse").parameterizedBy(res[0].type.toKotlinPoetType(modelMapping))
             hasMoreThanOne2xxResponse() -> error("Invalid responses defined for operation with identifier: ${this.name}. Has more than one 2xx responses defined")
-            else -> this.first2xxResponse()?.let { ClassName(micronautHttpPackage, "HttpResponse").parameterizedBy(it.type.toKotlinPoetType(modelMapping)) }
+            else -> first2xxResponse()?.let { ClassName(micronautHttpPackage, "HttpResponse").parameterizedBy(it.type.toKotlinPoetType(modelMapping)) }
         }
     }
+//TODO: we could give functionality of marking an operation as preferred one, in case we want to support multiple 2xx for some reason
