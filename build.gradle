@@ -5,16 +5,18 @@ plugins {
 }
 
 subprojects {
-    apply plugin: 'org.jetbrains.kotlin.jvm'
-    apply plugin: 'org.jetbrains.kotlin.kapt'
-    apply plugin: "com.kdabir.mksrc"
-
     group = 'com.medly.apifi'
 
     repositories {
-        mavenCentral()
         jcenter()
     }
+}
+
+configure(subprojects.findAll {it.name != 'plugin'}) { // no java component publishing for plugin
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: 'org.jetbrains.kotlin.kapt'
+    apply plugin: "com.kdabir.mksrc"
+    apply plugin: "maven-publish"
 
     dependencies {
         implementation platform('org.jetbrains.kotlin:kotlin-bom')
@@ -32,6 +34,14 @@ subprojects {
         testLogging {
             events "PASSED", "FAILED", "SKIPPED"
             exceptionFormat "full"
+        }
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+            }
         }
     }
 
@@ -67,17 +77,19 @@ project(":cli") {
     }
 }
 
-project(":runtime-micronaut") {
+project(":runtime") {
 
     dependencies {
-        kapt(platform("io.micronaut:micronaut-bom:$micronautVersion"))
-        kapt("io.micronaut:micronaut-inject-java")
+        // todo do we need kapt in this project?
+        // kapt(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+        // kapt("io.micronaut:micronaut-inject-java")
 
         implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
         implementation("io.micronaut:micronaut-inject")
         implementation("io.micronaut:micronaut-http")
         implementation("io.micronaut:micronaut-http-server")
 
-        kaptTest("io.micronaut:micronaut-inject-java")
+        // todo do we need kapt in this project?
+        // kaptTest("io.micronaut:micronaut-inject-java")
     }
 }
